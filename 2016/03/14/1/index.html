@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/uploads/avatar.jpg?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="1234567    Service是Android程序里面最常用的基础组件之一，它是一个可以在后台长期运行的组件，用户不能直接与之交互，但可以通过别的应用组件绑定服务与之交互，service使用需要在manifest中进行配置。    1. service默认运行在主线程中，处理耗时的逻辑一样回导致ANR。    2. service创建的目的是Activity不可见或者销毁的情况下仍能执行逻辑">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Service及相关知识点总结">
+<meta property="og:url" content="http://oniros.cn/2016/03/14/1/index.html">
+<meta property="og:site_name" content="仲崇峰">
+<meta property="og:description" content="1234567    Service是Android程序里面最常用的基础组件之一，它是一个可以在后台长期运行的组件，用户不能直接与之交互，但可以通过别的应用组件绑定服务与之交互，service使用需要在manifest中进行配置。    1. service默认运行在主线程中，处理耗时的逻辑一样回导致ANR。    2. service创建的目的是Activity不可见或者销毁的情况下仍能执行逻辑">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-08-23T05:40:28.429Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Service及相关知识点总结">
+<meta name="twitter:description" content="1234567    Service是Android程序里面最常用的基础组件之一，它是一个可以在后台长期运行的组件，用户不能直接与之交互，但可以通过别的应用组件绑定服务与之交互，service使用需要在manifest中进行配置。    1. service默认运行在主线程中，处理耗时的逻辑一样回导致ANR。    2. service创建的目的是Activity不可见或者销毁的情况下仍能执行逻辑">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '仲崇峰'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://oniros.cn/2016/03/14/1/"/>
+
+
+
+
+
+  <title>Service及相关知识点总结 | 仲崇峰</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fc005a31602cc126a53e91f81e842864";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">仲崇峰</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://oniros.cn/2016/03/14/1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="仲崇峰">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="仲崇峰">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Service及相关知识点总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-14T17:12:00+08:00">
+                2016-03-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">    Service是Android程序里面最常用的基础组件之一，它是一个可以在后台长期运行的组件，用户不能直接</div><div class="line">与之交互，但可以通过别的应用组件绑定服务与之交互，service使用需要在manifest中进行配置。</div><div class="line">    1. service默认运行在主线程中，处理耗时的逻辑一样回导致ANR。</div><div class="line">    2. service创建的目的是Activity不可见或者销毁的情况下仍能执行逻辑。</div><div class="line">    3. 一个service无论new多少次只能有一个实例</div><div class="line">    4. 可以和一个已经调用startService而被开启的service进行绑定，这种情况下stopService或stopSelf</div><div class="line">并不能停止service(除非所有的客户都解除绑定)</div></pre></td></tr></table></figure>
+<h2 id="1-Service的两种启动方式及生命周期"><a href="#1-Service的两种启动方式及生命周期" class="headerlink" title="1.Service的两种启动方式及生命周期"></a>1.Service的两种启动方式及生命周期</h2><p><strong>1).StartedService(生命周期onCreate-&gt;onStartCommand-&gt;running-&gt;onDestroy)</strong></p>
+<ul>
+<li>启动<br>通过startServce方法启动service，如果不调用stopService或者stopSelf停止服务则可以无限的运行下去(即使启动service的组建被销毁也不影响)，第一次启动会调用onCreate和onStartCommand方法，多次启动不再调用onCreate方法只调用onStartCommand方法，并且传入的startId不同。</li>
+<li>停止<br>通过stopService方法停止service，如果service没启动则没有什么效果；如果service已经通过startService启动，并且没有绑定其他客户则会停止service并且调用onDestroy方法。在service类内可以调用stopSelf方法停止service。</li>
+</ul>
+<p><strong>2).BoundService(生命周期onCreate-&gt;onBind-&gt;running-&gt;onUnbind-&gt;onDestroy)</strong></p>
+<ul>
+<li>启动<br>通过bindService方法启动service，会将service与启动的组件进行绑定，生命周期受启动组件什么周期影响，不会无限运行，启动组件可以通过IBinder接口和service进行通信。首次启动会调用onCreate和onBind方法，并且会调用ServiceConnection里的onServiceConnected方法(如果onBind返回null则不会调用)，多次绑定不会多次调用onBind方法只得到IBinder对象(同一个)，当最后一个绑定调用unBind方法解除绑定才会销毁</li>
+<li>停止<br>通过unbindService方法解绑service，如果没有bindService(即使startService启动过)会报错崩溃；如果已经bindService则会停止service并调用onUnbind和onDestroy方法<blockquote>
+<p>ServiceConnection中onServiceDisconnected方法会在与服务的连接意外中断时（例如当服务崩溃或被终止时）调用该方法。当客户端取消绑定时，系统不会调用该方法。</p>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>stopSelf(int startId)与stopSelf()的区别：stopSelf()直接停止；stopSelf(startId)在其参数startId跟最后启动该service时生成的startId相等时才会执行停止服务。startId即是调用onStartCommand时传入的参数。</p>
+</blockquote>
+<h2 id="2-startService和bindService组合使用时的生命周期"><a href="#2-startService和bindService组合使用时的生命周期" class="headerlink" title="2.startService和bindService组合使用时的生命周期"></a>2.startService和bindService组合使用时的生命周期</h2><pre><code>service有两种状态，一种是“已启动”，一种是“已绑定”，当且仅当service没有任何状态时才会销毁
+</code></pre><ul>
+<li><strong>start-&gt;bind-&gt;running-&gt;stop-&gt;unbind(先start后bind，然后先stop再unbind)</strong><blockquote>
+<p>1.start：会调用onCreate和onStartCommand方法；<br>2.bind：因为service已经启动所以只会调用onBind方法；<br>3.stop：因为service还别的有客户端bind，所以还有个“已绑定”状态，所以不会被销毁，所以不会执行onDestroy方法；<br>4.unbind：此时已经没有任何状态了，所以会被销毁，会调用onUnbind和onDestroy方法。</p>
+</blockquote>
+</li>
+<li><strong>start-&gt;bind-&gt;running-&gt;unbind-&gt;stop(先start后bind，然后先unbind再stop)</strong><blockquote>
+<p>1.start：会调用onCreate和onStartCommand方法；<br>2.bind：因为service已经启动所以只会调用onBind方法；<br>3.unbind：因为service是别的客户端通过start启动的，所以还有个“已启动”状态，所以不会被销毁，所以只执行onUnbind方法；<br>4.stop：此时已经没有任何状态了，所以会被销毁，调用onDestroy方法。</p>
+</blockquote>
+</li>
+<li><p><strong>bind-&gt;start-&gt;running-&gt;stop-&gt;unbind(先bind后start，然后先stop再unbind)</strong></p>
+<blockquote>
+<p>1.bind：会调用onCreate和onBind方法；<br>2.start：因为service已启动，所以只会调用onStartCommand方法；<br>3.stop：因为service是别的客户端通过bind启动的，所以还有个“已绑定”的状态，所以不会被销毁，所以不会执行onDestroy方法；<br>4.unbind：此时已经没有任何状态了，所以会被销毁，会调用onUnbind和onDestroy方法。</p>
+</blockquote>
+</li>
+<li><p><strong>bind-&gt;start-&gt;running-&gt;unbind-&gt;stop(先bind后start，然后先unbind后stop) </strong></p>
+<blockquote>
+<p>1.bind：会调用onCreate和onBind方法；<br>2.start：因为service已启动，所以只会调用onStartCommand方法；<br>3.unbind：因为service还有别的客户端调用过startService方法，所以还有个“已启动”的状态，所以不会被销毁，所以只会执行onUnbind方法。<br>4.stop：此时已经没有任何状态了，所以会被销毁，会调用onDestroy方法；</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="3-Foreground-Service-前台服务"><a href="#3-Foreground-Service-前台服务" class="headerlink" title="3.Foreground Service(前台服务)"></a>3.Foreground Service(前台服务)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">    前台service并不是运行在前台，它也是运行在后台，它只是在service开启时通过使用通知(常驻通知栏，</div><div class="line">只有service停止或者通stopForeground来移除)来告诉人们它正在运行，例如音乐播放器通过前台服务来显示</div><div class="line">当前播放的曲目、进度条等，这里只介绍简单的使用方法，具体使用方法在后面的RemoteView中再做介绍。</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyService</span> <span class="keyword">extends</span> <span class="title">Service</span> </span>&#123;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> IBinder <span class="title">onBind</span><span class="params">(Intent intent)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    &#125;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate();</div><div class="line">        PendingIntent contentIntent = PendingIntent.getActivity(<span class="keyword">this</span>, <span class="number">0</span>, <span class="keyword">new</span> Intent(<span class="keyword">this</span>, MyService.class), <span class="number">0</span>);</div><div class="line">        Notification notification = <span class="keyword">new</span> Notification.Builder(<span class="keyword">this</span>)</div><div class="line">                .setSmallIcon(R.mipmap.ic_launcher)</div><div class="line">                .setWhen(System.currentTimeMillis())</div><div class="line">                .setContentTitle(<span class="string">"我是标题"</span>)</div><div class="line">                .setContentText(<span class="string">"正在运行"</span>)</div><div class="line">                .setContentIntent(contentIntent)</div><div class="line">                .build();</div><div class="line">        startForeground(<span class="number">1</span>, notification);</div><div class="line">    &#125;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onDestroy();</div><div class="line">        stopForeground(<span class="keyword">true</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过<strong>startForeground</strong>方法开启，通过<strong>stopForeground</strong>停止，使用比较简单不再赘述了。</p>
+<h2 id="4-IntentService"><a href="#4-IntentService" class="headerlink" title="4.IntentService"></a>4.IntentService</h2><p>本部分内容见<a href="http://www.jianshu.com/p/5f6ee4f207ef" target="_blank" rel="external">Android线程—IntentService的使用及原理</a></p>
+<h2 id="5-IPC-Messenger和AIDL的原理及使用-后续更新"><a href="#5-IPC-Messenger和AIDL的原理及使用-后续更新" class="headerlink" title="5.IPC-Messenger和AIDL的原理及使用(后续更新)"></a>5.IPC-Messenger和AIDL的原理及使用(后续更新)</h2>
+      
+    </div>
+    
+    
+    
+
+
+<!--
+    
+-->
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i>&nbsp; Android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/09/1/" rel="next" title="Activity的生命周期和启动模式">
+                <i class="fa fa-chevron-left"></i> Activity的生命周期和启动模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/23/1/" rel="prev" title="Hexo博客多终端同步写作管理">
+                Hexo博客多终端同步写作管理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+    
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="仲崇峰" />
+          <p class="site-author-name" itemprop="name">仲崇峰</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Service的两种启动方式及生命周期"><span class="nav-text">1.Service的两种启动方式及生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-startService和bindService组合使用时的生命周期"><span class="nav-text">2.startService和bindService组合使用时的生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Foreground-Service-前台服务"><span class="nav-text">3.Foreground Service(前台服务)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-IntentService"><span class="nav-text">4.IntentService</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-IPC-Messenger和AIDL的原理及使用-后续更新"><span class="nav-text">5.IPC-Messenger和AIDL的原理及使用(后续更新)</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <!--
+
+<div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">仲崇峰</span>
+</div>
+
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+-->
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

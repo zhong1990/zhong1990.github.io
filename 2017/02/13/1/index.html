@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JVM," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/uploads/avatar.jpg?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="1.虚拟机内存区域  程序计数器：线程私有，较小的内存空间，功能类似于PC寄存器，字节码解释器工作时通过改变这个计数器的值来选取下一条需要执行的字节码指令。不会发生OutOfMemoryError异常 虚拟机栈：线程私有，它的生命周期与线程相同，描述的是java方法执行的内存模型：每个方法在执行的同时都会创建栈帧用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用到执行完成对应">
+<meta name="keywords" content="JVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java内存区域">
+<meta property="og:url" content="http://oniros.cn/2017/02/13/1/index.html">
+<meta property="og:site_name" content="仲崇峰">
+<meta property="og:description" content="1.虚拟机内存区域  程序计数器：线程私有，较小的内存空间，功能类似于PC寄存器，字节码解释器工作时通过改变这个计数器的值来选取下一条需要执行的字节码指令。不会发生OutOfMemoryError异常 虚拟机栈：线程私有，它的生命周期与线程相同，描述的是java方法执行的内存模型：每个方法在执行的同时都会创建栈帧用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用到执行完成对应">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1213892-b3167f1cccab184d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1213892-e719d50f032064e4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540">
+<meta property="og:updated_time" content="2017-08-23T05:40:28.427Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java内存区域">
+<meta name="twitter:description" content="1.虚拟机内存区域  程序计数器：线程私有，较小的内存空间，功能类似于PC寄存器，字节码解释器工作时通过改变这个计数器的值来选取下一条需要执行的字节码指令。不会发生OutOfMemoryError异常 虚拟机栈：线程私有，它的生命周期与线程相同，描述的是java方法执行的内存模型：每个方法在执行的同时都会创建栈帧用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用到执行完成对应">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1213892-b3167f1cccab184d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '仲崇峰'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://oniros.cn/2017/02/13/1/"/>
+
+
+
+
+
+  <title>Java内存区域 | 仲崇峰</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fc005a31602cc126a53e91f81e842864";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">仲崇峰</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://oniros.cn/2017/02/13/1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="仲崇峰">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="仲崇峰">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java内存区域</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-13T14:20:00+08:00">
+                2017-02-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-虚拟机内存区域"><a href="#1-虚拟机内存区域" class="headerlink" title="1.虚拟机内存区域"></a>1.虚拟机内存区域</h2><p><img src="http://upload-images.jianshu.io/upload_images/1213892-b3167f1cccab184d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540" alt="运行时数据区"></p>
+<ul>
+<li><strong>程序计数器</strong>：线程私有，较小的内存空间，功能类似于PC寄存器，字节码解释器工作时通过改变这个计数器的值来选取下一条需要执行的字节码指令。不会发生OutOfMemoryError异常</li>
+<li><strong>虚拟机栈</strong>：线程私有，它的生命周期与线程相同，描述的是java方法执行的内存模型：每个方法在执行的同时都会创建栈帧用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用到执行完成对应着一个栈帧在虚拟机栈中入栈到出栈的过程。这个区域规定了两种异常状况：线程请求的栈深度大于虚拟机所允许的深度抛出StackOverflowError异常；虚拟机栈动态扩展无法申请足够的内存抛出OutOfMemoryError异常。</li>
+<li><strong>本地方法栈</strong>：线程私有，与虚拟机栈的区别为虚拟机执行的时java方法服务，本地方法栈则为虚拟机使用的Native方法服务。此区域也会抛出StackOverflowError和OutOfMemoryError异常。</li>
+<li><strong>堆</strong>：线程共享，用来存放对象实例或数组，几乎所有的对象实例都在这里分配内存，可以处于不连续的内存空间。堆是垃圾收集器管理的主要区域，因此也称为GC堆。如果堆中没有内存用来完成分配实例，并且无法扩展则会抛出OutOfMemoryError异常。</li>
+<li><strong>方法区</strong>：线程共享，用来存放已被虚拟机加载的类信息、常量、静态变量、即使编译器编译后的代码等数据。很多人称之为“永久区”，垃圾收集行为在这个区域比较少见，但数据并非永久存在。当方法区无法满足内存分配需求时将抛出OutOfMemoryError异常。</li>
+</ul>
+<h2 id="2-栈帧"><a href="#2-栈帧" class="headerlink" title="2.栈帧"></a>2.栈帧</h2><p><img src="http://upload-images.jianshu.io/upload_images/1213892-e719d50f032064e4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540" alt="虚拟机栈结构"></p>
+<p>每一个方法从调用到执行完成对应着一个栈帧在虚拟机栈中入栈到出栈的过程。每个方法在执行的同时都会创建栈帧用于存储局部变量表、操作数栈、动态链接、方法出口等信息。</p>
+<ul>
+<li><strong>局部变量表</strong>：是一个以字长为单位的数组，通过索引从0开始访问（0位置一般为this引用），用来存放方法内定义的局部变量（包括this引用）和方法参数，可存放boolean、byte、char、short、int、float、long、double、reference(对象的引用)或returnAddress(指向下一条字节码指令的地址)类型的数据</li>
+<li><strong>操作数栈</strong>：是一个以字长为单位的数组，通过压栈和出栈访问。操作数栈的每一个元素可以是任意Java数据类型。虚拟机把操作数栈作为它的工作区——大多数指令都要从这里弹出数据，执行运算，然后把结果压回操作数栈。举个例子，整数加法的字节码指令iadd在运行的时候要求操作数栈中最接近栈顶的两个元素已经存入了两个int型的数值，当执行这个指令时，会将这两个int值和并相加，然后将相加的结果入栈。</li>
+<li><strong>动态链接</strong>：每个栈帧都包含一个执行运行时常量池中该栈帧所属方法的引用，持有这个引用是为了支持方法调用过程中的动态连接。Class 文件中存放了大量的符号引用，字节码中的方法调用指令就是以常量池中指向方法的符号引用作为参数。这些符号引用一部分会在类加载阶段或第一次使用时转化为直接引用，这种转化称为静态解析。另一部分将在每一次运行期间转化为直接引用，这部分称为动态连接。</li>
+<li><strong>方法出口</strong>：方法执行后只有返回字节码指令或抛出异常才会退出，无论方法如何退出都需要返回到方法被调用的位置，程序才能继续执行。方法退出等同于当前栈帧出栈，因此退出时可能执行的操作有：恢复上层方法的局部变量表和操作数栈，把返回值（如果有的话）压入调用者栈帧的操作数栈中，调整PC计数器的值以指向方法调用指令后面的一条指令等。</li>
+</ul>
+<h2 id="2-补充"><a href="#2-补充" class="headerlink" title="2.补充"></a>2.补充</h2><ul>
+<li>运行时常量池：是方法区的一部分，加载class文件时会将class文件中用于存放编译器生成的各种字面量和符号引用的内容存放在常量池中，运行期间也可以将新的常量放入常量池，例如String.intern()方法，受限于方法区，当方法区无法满足内存分配需求时将抛出。OutOfMemoryError异常</li>
+<li>直接内存：不是虚拟机内存区域，受限于本机总内存，无法动态扩展时出现OutOfMemoryError异常。(Native函数库可以直接分配堆外内存，然后通过java堆中得DirectByteBuffer对象作为这块区域的引用进行操作，避免java堆和Native堆来回复制)。</li>
+</ul>
+<h2 id="3-注意"><a href="#3-注意" class="headerlink" title="3.注意"></a>3.注意</h2><p>很多人吧java内存划分为堆(Heap)和栈(Stack)，这里的栈指的是虚拟机栈或者是虚拟机栈中得局部变量表部分。</p>
+<blockquote>
+<p>参考：<br>1.<a href="http://www.cnblogs.com/dolphin0520/p/3613043.html" target="_blank" rel="external">http://www.cnblogs.com/dolphin0520/p/3613043.html</a><br>2.<a href="http://www.360doc.com/content/14/0925/13/1073512_412236522.shtml" target="_blank" rel="external">http://www.360doc.com/content/14/0925/13/1073512_412236522.shtml</a></p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+
+<!--
+    
+-->
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JVM/" rel="tag"><i class="fa fa-tag"></i>&nbsp; JVM</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/27/1/" rel="next" title="Android自定义View实例－QQBubbleView实现">
+                <i class="fa fa-chevron-left"></i> Android自定义View实例－QQBubbleView实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/24/1/" rel="prev" title="Java面向对象知识点整理">
+                Java面向对象知识点整理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+    
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="仲崇峰" />
+          <p class="site-author-name" itemprop="name">仲崇峰</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-虚拟机内存区域"><span class="nav-text">1.虚拟机内存区域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-栈帧"><span class="nav-text">2.栈帧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-补充"><span class="nav-text">2.补充</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-注意"><span class="nav-text">3.注意</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <!--
+
+<div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">仲崇峰</span>
+</div>
+
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+-->
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

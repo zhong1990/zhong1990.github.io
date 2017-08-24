@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Java," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/uploads/avatar.jpg?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="1.volatile:每个线程运行时都有一个线程栈，它保存了线程运行时的变量，当一个线程访问一个对象时，首先通过对象的引用找到其对应在堆内存的变量值，然后把变量的具体值load到该线程的线程栈中，之后线程就和对象在堆内存的变量值没有关系了，而是直接修改副本变量的值，修改完成后某一时刻(线程退出前)，自动把线程变量副本的值回写到对象在堆中的变量。volatile修饰的变量，jvm虚拟机只是保证从主内">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java多线程随笔记">
+<meta property="og:url" content="http://oniros.cn/2016/07/12/1/index.html">
+<meta property="og:site_name" content="仲崇峰">
+<meta property="og:description" content="1.volatile:每个线程运行时都有一个线程栈，它保存了线程运行时的变量，当一个线程访问一个对象时，首先通过对象的引用找到其对应在堆内存的变量值，然后把变量的具体值load到该线程的线程栈中，之后线程就和对象在堆内存的变量值没有关系了，而是直接修改副本变量的值，修改完成后某一时刻(线程退出前)，自动把线程变量副本的值回写到对象在堆中的变量。volatile修饰的变量，jvm虚拟机只是保证从主内">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1213892-519d18b8bff63f1e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-08-23T05:40:28.428Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java多线程随笔记">
+<meta name="twitter:description" content="1.volatile:每个线程运行时都有一个线程栈，它保存了线程运行时的变量，当一个线程访问一个对象时，首先通过对象的引用找到其对应在堆内存的变量值，然后把变量的具体值load到该线程的线程栈中，之后线程就和对象在堆内存的变量值没有关系了，而是直接修改副本变量的值，修改完成后某一时刻(线程退出前)，自动把线程变量副本的值回写到对象在堆中的变量。volatile修饰的变量，jvm虚拟机只是保证从主内">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1213892-519d18b8bff63f1e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '仲崇峰'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://oniros.cn/2016/07/12/1/"/>
+
+
+
+
+
+  <title>Java多线程随笔记 | 仲崇峰</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fc005a31602cc126a53e91f81e842864";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">仲崇峰</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://oniros.cn/2016/07/12/1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="仲崇峰">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="仲崇峰">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java多线程随笔记</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-07-12T14:38:00+08:00">
+                2016-07-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java多线程/" itemprop="url" rel="index">
+                    <span itemprop="name">Java多线程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-volatile"><a href="#1-volatile" class="headerlink" title="1.volatile:"></a>1.volatile:</h2><p>每个线程运行时都有一个线程栈，它保存了线程运行时的变量，当一个线程访问一个对象时，首先通过对象的引用找到其对应在堆内存的变量值，然后把变量的具体值load到该线程的线程栈中，之后线程就和对象在堆内存的变量值没有关系了，而是直接修改副本变量的值，修改完成后某一时刻(线程退出前)，自动把线程变量副本的值回写到对象在堆中的变量。<br><img src="http://upload-images.jianshu.io/upload_images/1213892-519d18b8bff63f1e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="[来源](http://www.cnblogs.com/aigongsi/archive/2012/04/01/2429166.html)"><br><strong>volatile修饰的变量，jvm虚拟机只是保证从主内存加载到线程工作内存的值是最新的，并不能规避并发问题。</strong><br>例如假如线程1，线程2 在进行read,load 操作中，发现主内存中count的值都是5，那么都会加载这个最新的值，在线程1堆count进行修改之后，会write到主内存中，主内存中的count变量就会变为6，线程2由于已经进行read,load操作，在进行运算之后，也会更新主内存count的变量值为6，导致两个线程即使用volatile关键字修改之后，还是会存在并发的情况。</p>
+<h2 id="2-synchronized"><a href="#2-synchronized" class="headerlink" title="2.synchronized:"></a>2.synchronized:</h2><p>同一个对象的同步代码块(一个或多个)，同一时间内只能有一个线程访问，其他线程的访问(无论是该同步代码块还是该对象其他同步代码块)都处于阻塞状态直到先前线程访问结束，此时，其他线程仍可以访问该对象的非同步代码块，synchronized同时修饰一个类的静态方法和非静态方法，线程访问，一个获取的是类锁、一个是获取的对象锁，互不干扰，可以同时访问，同样一个线程可以同时获得这两个锁。</p>
+<ul>
+<li>修饰一个代码块，作用的对象是调用这个代码块的对象</li>
+<li>修饰一个方法，作用的对象是调用这个方法的对象</li>
+<li>修饰一个静态方法，作用的对象是这个类的所有对象</li>
+<li>修改一个类，作用的对象是这个类的所有对象</li>
+</ul>
+<h2 id="3-wait-notify-notifyAll"><a href="#3-wait-notify-notifyAll" class="headerlink" title="3.wait+notify+notifyAll"></a>3.wait+notify+notifyAll</h2><p>线程协作－生产者/消费者问题。这三个方法都是Object的方法，调用wait将释放锁，notify随机唤醒一个线程，notifyAll唤醒所有线程。<br>在调用wait方法时，都是用while判断条件的，而不是if，在wait方法说明中，也推荐使用while，因为在某些特定的情况下，线程有可能被假唤醒，使用while会循环检测更稳妥。wait和notify方法必须工作于synchronized内部，且这两个方法只能由锁对象来调用。</p>
+<h2 id="4-线程中断、线程让步、线程睡眠、线程合并、线程优先级"><a href="#4-线程中断、线程让步、线程睡眠、线程合并、线程优先级" class="headerlink" title="4.线程中断、线程让步、线程睡眠、线程合并、线程优先级"></a>4.线程中断、线程让步、线程睡眠、线程合并、线程优先级</h2><ul>
+<li><p>线程中断</p>
+<ul>
+<li>void interrupt()中断线程，<strong>并不是真正停止线程执行，只是设置状态为true</strong>，如果线程在调用 Object 类的 wait()、wait(long) 或 wait(long, int) 方法，或者该类的 join()、join(long)、join(long, int)、sleep(long) 或 sleep(long, int) 方法过程中受阻，则其中断状态将被清除，它还将收到一个 InterruptedException；</li>
+<li>static boolean interrupted()判断当前线程是否中断，<strong>线程的中断状态会由该方法清除，如果连续两次调用该方法，则第二次调用将返回 false</strong>；</li>
+<li>boolean isInterrupted()判断线程是否中断，<strong>线程的中断状态会由该方法清除，如果连续两次调用该方法，则第二次调用将返回 false</strong>。</li>
+</ul>
+</li>
+<li><p>线程让步<br>-static void yield()暂停当前正在执行的线程，并执行其他线程，<strong>如果存在synchronized线程同步的话，线程让步不会释放锁(监视器对象)</strong>。</p>
+</li>
+<li><p>线程睡眠<br>-static void sleep(long millis)让当前线程暂停执行millis毫秒，<strong>如果存在synchronized线程同步的话，线程让步不会释放锁(监视器对象)</strong>。<br>-static void sleep(long millis, int nanos)让当前线程暂停执行millis毫秒 + nanos纳秒，<strong>如果存在synchronized线程同步的话，线程让步不会释放锁(监视器对象)</strong>。</p>
+</li>
+<li>线程合并<br>-void join()等待该线程终止；<br>-void join(long millis)等待该线程终止的时间最长为 millis毫秒；<br>-void join(long millis, int nanos)等待该线程终止的时间最长为 millis毫秒 + nanos纳秒。<br><strong>所谓合并就是等待其他线程执行完成，再执行当前线程</strong></li>
+<li>线程优先级<ul>
+<li>public static final int MAX_PRIORITY ＝ 10</li>
+<li>public static final int MIN_PRIORITY ＝ 1</li>
+<li>public static final int NORM_PRIORITY ＝ 5<br><strong>默认为NORM_PRIORITY，优先级高的，获取CPU调度的机会就大</strong></li>
+</ul>
+</li>
+</ul>
+<h2 id="5-定时任务"><a href="#5-定时任务" class="headerlink" title="5.定时任务"></a>5.定时任务</h2><p>Timer和TimerTask，自JDK5之后，可以用ScheduledThreadPoolExecutor来替代Timer。</p>
+<h2 id="6-Callable、Future和FutureTask"><a href="#6-Callable、Future和FutureTask" class="headerlink" title="6.Callable、Future和FutureTask"></a>6.Callable、Future和FutureTask</h2><p>创建线程的2种方式，一种是直接继承Thread，另外一种就是实现Runnable接口，这两种方式的缺点是：在执行完任务后无法获取执行结果，从JDK5开始，就提供了Callable和Future，通过它们可以在任务执行完毕之后得到任务执行结果。阅读过Android中AsyncTask源码的同学应该会发现AsyncTask中也应用了这两个类。</p>
+<h2 id="7-锁对象Lock"><a href="#7-锁对象Lock" class="headerlink" title="7.锁对象Lock"></a>7.锁对象Lock</h2><p>用sychronized修饰的方法或者语句块在代码执行完之后锁自动释放，而用Lock需要我们手动释放锁，所以为了保证锁最终被释放(发生异常情况)，要把互斥区放在try内，释放锁放在finally内。<a href="http://blog.lastww.com/2015/02/04/difference-between-java-lock-and-synchronized/" target="_blank" rel="external">与synchronized的区别</a></p>
+<h2 id="8-Condition"><a href="#8-Condition" class="headerlink" title="8.Condition"></a>8.Condition</h2><p>Condition中await()对应Object#wait()，signal()对应Object#notify()，signalAll()对应Object#notifyAll()，Condition与Lock结合使用，通过Lock.newCondition()方法创建与Lock绑定的Condition实例。Lock和Condition的关系就如同 Object.wait(),Object.notify()方法和synchronized一样，它们都可以配合使用完成对多线程协作的控制。<br><strong>其他不常用的暂不记载，例如CAS、并行计算的框架Fork/Join、ThreadLocal、BlockingQueue等</strong></p>
+<blockquote>
+<p>参考：<br>1.<a href="http://www.cnblogs.com/aigongsi/archive/2012/04/01/2429166.html" target="_blank" rel="external">http://www.cnblogs.com/aigongsi/archive/2012/04/01/2429166.html</a><br>2.<a href="http://blog.csdn.net/ghsau/article/category/1707779" target="_blank" rel="external">http://blog.csdn.net/ghsau/article/category/1707779</a></p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+
+<!--
+    
+-->
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i>&nbsp; Java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/08/1/" rel="next" title="Android线程—线程池">
+                <i class="fa fa-chevron-left"></i> Android线程—线程池
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/13/1/" rel="prev" title="Android多进程模式">
+                Android多进程模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+    
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="仲崇峰" />
+          <p class="site-author-name" itemprop="name">仲崇峰</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-volatile"><span class="nav-text">1.volatile:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-synchronized"><span class="nav-text">2.synchronized:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-wait-notify-notifyAll"><span class="nav-text">3.wait+notify+notifyAll</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-线程中断、线程让步、线程睡眠、线程合并、线程优先级"><span class="nav-text">4.线程中断、线程让步、线程睡眠、线程合并、线程优先级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-定时任务"><span class="nav-text">5.定时任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-Callable、Future和FutureTask"><span class="nav-text">6.Callable、Future和FutureTask</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-锁对象Lock"><span class="nav-text">7.锁对象Lock</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-Condition"><span class="nav-text">8.Condition</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <!--
+
+<div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">仲崇峰</span>
+</div>
+
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+-->
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

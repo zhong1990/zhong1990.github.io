@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/uploads/avatar.jpg?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="1.生命周期的各个过程 onCreate: 表示Activity正在被创建，Activity生命周期的第一个方法，可以做一些初始化工作。 onStart: 表示Activity正在启动，这时Activity已经可见但没有出现在前台，用户无法交互，可以理解为Activity已经显示出来，但我们看不到。 onRestart: 表示Activity正在重启，Activity从不可见变为可见状态。 onR">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Activity的生命周期和启动模式">
+<meta property="og:url" content="http://oniros.cn/2016/03/09/1/index.html">
+<meta property="og:site_name" content="仲崇峰">
+<meta property="og:description" content="1.生命周期的各个过程 onCreate: 表示Activity正在被创建，Activity生命周期的第一个方法，可以做一些初始化工作。 onStart: 表示Activity正在启动，这时Activity已经可见但没有出现在前台，用户无法交互，可以理解为Activity已经显示出来，但我们看不到。 onRestart: 表示Activity正在重启，Activity从不可见变为可见状态。 onR">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-08-23T05:40:28.421Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Activity的生命周期和启动模式">
+<meta name="twitter:description" content="1.生命周期的各个过程 onCreate: 表示Activity正在被创建，Activity生命周期的第一个方法，可以做一些初始化工作。 onStart: 表示Activity正在启动，这时Activity已经可见但没有出现在前台，用户无法交互，可以理解为Activity已经显示出来，但我们看不到。 onRestart: 表示Activity正在重启，Activity从不可见变为可见状态。 onR">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '仲崇峰'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://oniros.cn/2016/03/09/1/"/>
+
+
+
+
+
+  <title>Activity的生命周期和启动模式 | 仲崇峰</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fc005a31602cc126a53e91f81e842864";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">仲崇峰</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://oniros.cn/2016/03/09/1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="仲崇峰">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="仲崇峰">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Activity的生命周期和启动模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-09T17:41:00+08:00">
+                2016-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-生命周期的各个过程"><a href="#1-生命周期的各个过程" class="headerlink" title="1.生命周期的各个过程"></a>1.生命周期的各个过程</h2><ul>
+<li><strong>onCreate</strong>: 表示Activity正在被创建，Activity生命周期的第一个方法，可以做一些初始化工作。</li>
+<li><strong>onStart</strong>: 表示Activity正在启动，这时Activity已经可见但没有出现在前台，用户无法交互，可以理解为Activity已经显示出来，但我们看不到。</li>
+<li><strong>onRestart</strong>: 表示Activity正在重启，Activity从不可见变为可见状态。</li>
+<li><strong>onResume</strong>: 表示Activity已经可见并且出现在前台，是Activity获得用户焦点，在与用户交互。</li>
+<li><strong>onPause</strong>: 表示Activity正在停止，紧接着onStop将被调用，不能做耗时操作，因为只有onPause执行完新的Activity的onResume才会执行。</li>
+<li><strong>onStop</strong>: 表示Activity即将停止，不能做耗时操作。</li>
+<li><strong>onDestroy</strong>: 表示Activity即将被销毁，Activity生命周期的最后一个方法，可以做一些回收工作。</li>
+</ul>
+<blockquote>
+<p>ActivityA第一次启动：onCreate-&gt;onStart-&gt;onResume:</p>
+<blockquote>
+<p>1)当按下home键时：onPause-&gt;onStop.<br>2)当新打开ActivityB时：onPause-&gt;(B:onCreate-&gt;onStart-&gt;onResume)-&gt;onStop.</p>
+<blockquote>
+<p>返回ActivityA时：(B:onPause-&gt;)onRestart-&gt;onStart-&gt;onResume-&gt;(B:onStop-&gt;onDestroy).</p>
+</blockquote>
+<p>3)当按下back键时：onPause-&gt;onStop-&gt;onDestroy.<br>4)锁屏时：onPause-&gt;onStop. 解锁时：onStart-&gt;onResume。<br>5)配置改变时（如旋转屏幕）：onPause-&gt;onStop-&gt;onDestroy-&gt;onCreate-&gt;onStart-&gt;onResume.</p>
+<blockquote>
+<p>此时锁屏（横屏状态下）：onPause-&gt;onStop-&gt;onDestroy-&gt;onCreate-&gt;onStart-&gt;onResume-&gt; onPause 然后解锁（横屏状态下）：onResume-&gt;onPause-&gt;onStop-&gt;onDestroy-&gt;onCreate-&gt;onStart-&gt;onResume</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h2 id="2-onSaveInstanceState和onRestoreInstanceState触发的时机："><a href="#2-onSaveInstanceState和onRestoreInstanceState触发的时机：" class="headerlink" title="2.onSaveInstanceState和onRestoreInstanceState触发的时机："></a>2.onSaveInstanceState和onRestoreInstanceState触发的时机：</h2><p>当某个Activity变得容易被系统销毁时，onSaveInstanceState就会被执行(用户主动销毁除外，比如按back键)，例如：</p>
+<ol>
+<li><p>当用户按下HOME键时。</p>
+</li>
+<li><p>长按HOME键，选择运行其他的程序时。 </p>
+</li>
+<li><p>按下电源按键（关闭屏幕显示）时。 </p>
+</li>
+<li><p>从activity A中启动一个新的activity时。 </p>
+</li>
+<li><p>屏幕方向切换时，例如从竖屏切换到横屏时。 </p>
+</li>
+</ol>
+<p>onSaveInstanceState方法和onRestoreInstanceState方法“不一定”是成对的被调用的，onRestoreInstanceState被调用的前提是，Activity确实被系统销毁了。</p>
+<h2 id="3-Activity优先级："><a href="#3-Activity优先级：" class="headerlink" title="3.Activity优先级："></a>3.Activity优先级：</h2><ul>
+<li><p><strong>前台Activity</strong>：正在和用户交互的Activity，优先级最高。</p>
+</li>
+<li><p><strong>可见但非前台Activity</strong>：比如Activity中弹出一个对话框，此时Activity可见但无法和用户交互</p>
+</li>
+<li><p><strong>后台Activity</strong>：已经被暂停的Activity，比如执行了onStop，优先级最低。</p>
+</li>
+</ul>
+<blockquote>
+<p>优先级越低越有可能被系统销毁，如果一个进程没有四大组件在执行，那么该进程很快就会被系统杀死，因此一些后台工作不适合脱离四大组件独自运行在后台（可运行在service中）。</p>
+</blockquote>
+<h2 id="4-Activity的启动模式："><a href="#4-Activity的启动模式：" class="headerlink" title="4.Activity的启动模式："></a>4.Activity的启动模式：</h2><ul>
+<li><p><strong>standard</strong>：标准模式，也是系统默认模式，不管实例是否存在，每次启动都会重新创建一个新的实例。</p>
+</li>
+<li><p><strong>singleTop</strong>：栈顶复用模式，如果Activity位于任务栈栈顶那么Activity不会被重新创建同时会回调它的onNewIntent方法，如果Activity存在任务栈中但不在栈顶则会重新创建实例。</p>
+</li>
+<li><p><strong>singleTask</strong>：栈内复用模式，是一种单实例模式，多次启动Acitivity都不会重新创建，会回调onNewIntent方法，并且清除该Activity任务栈上面的所有Activity（clearTop效果）。当一个具有singleTask模式的Activity请求启动时，比如ActivityA，系统首先会寻找是否存在A所需要的任务栈，如果不存在先创建一个任务栈，然后创建实例A并放到任务栈中，如果任务栈存在，则判断栈中是否有实例A，如果存在则把A调到任务栈顶，并回调A的onNewIntent，A上面的所有Activity都被移除，如果不存在则创建实例A放入到任务栈中。</p>
+</li>
+<li><p><strong>singleInstance</strong>：单实例模式，是singleTask的加强模式，此种模式下的Activity只能单独位于一个任务栈，系统会为它单独创建一个任务栈，后续的请求不会创建新的Activity。singInstance和singleTask主要区别在与系统范围内的“实例唯一”还是当前Activity栈“实例唯一”。</p>
+</li>
+</ul>
+<blockquote>
+<p>假设目前有两个任务栈，前台任务栈中有AB(B位于栈顶)，后台任务栈中有CD(D位于栈顶，CD启动模式为singleTask)。如果现在请求启动D，那么整个后台任务栈都会被切换到前台，按返回键后退的顺序是ABCD：ABCD-&gt;ABC-&gt;AB-&gt;A；如果请求启动C，整个后台任务栈也会被切换至前台，因为C是singleTask模式所以它会把D顶出去，按返回键后退的顺序是ABC：ABC-&gt;AB-&gt;A。</p>
+<p>指定启动模式有两种方法：1.使用xml属性android:launchMode 2.使用代码intent.addFlags()。第二种方式优先于第一种，当两种都存在时以第二种为准，第一种不能设定FLAG_ACTIVITY_CLEAR_TOP标识，第二种无法设置singleInstance模式。</p>
+</blockquote>
+<h2 id="5-TaskAffinity"><a href="#5-TaskAffinity" class="headerlink" title="5.TaskAffinity"></a>5.TaskAffinity</h2><pre><code> 这个参数标识一个Activity所需要的任务栈名称，默认不指定情况下，所有Activity所需的任务栈为应用的包
+名。TaskAffinity属性主要和singleTask启动模式或者allowTaskReparenting属性配对使用：
+</code></pre><ul>
+<li><strong>TaskAffinity和singleTask</strong>：待启动的Activity会运行在名字和TaskAffinity相同的任务栈中。</li>
+<li><strong>TaskAffinity和allowTaskReparenting</strong>：当一个应用A启动了应用B的某个Activity后，如果这个allowTaskReparenting为true，那么应用B启动后，此Activity会从A的任务栈中转移到应用B的任务栈中。</li>
+</ul>
+<h2 id="6-Intent常用FLAG"><a href="#6-Intent常用FLAG" class="headerlink" title="6.Intent常用FLAG"></a>6.Intent常用FLAG</h2><ul>
+<li><strong>Intent.FLAG_ACTIVITY_NEW_TASK</strong>：效果和singleTask一样</li>
+<li><strong>FLAG_ACTIVITY_SINGLE_TOP</strong>：效果和singleTop一样</li>
+<li><strong>FLAG_ACTIVITY_CLEAR_TOP</strong>：当它启动时，同一个任务栈中所有位于它上面的Activity都会被移除栈，如果实例已存在调用onNewIntent方法，如果被启动的Activity模式为standard，那么连同它和它之上的activity都会被移除，并重新创建实例放入栈顶，singleTask默认就用该标识位效果。</li>
+<li><strong>FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS</strong>：具有这个标记的Activity不会出现在历史Activity列表中，当某些情况下我们不希望用户通过历史列表回到我们的Activity的时候这个标记比较有用，它等同于属设置android:excludeFromRecents=”true”<br>。</li>
+</ul>
+<h2 id="7-IntentFilter的匹配规则"><a href="#7-IntentFilter的匹配规则" class="headerlink" title="7.IntentFilter的匹配规则"></a>7.IntentFilter的匹配规则</h2><pre><code>IntentFilter中过滤信息如果有action、category、data三种，只有同时匹配了action、category、data才
+算完全匹配，只有完全匹配才能启动Activity，此外一个Activity可以有多个intent-filter，一个intent只
+要能匹配任何一组即可成功启动Activity
+</code></pre><ul>
+<li><strong>action匹配规则</strong>：只要能和规律规则中任何一个匹配即可匹配成功</li>
+<li><strong>category匹配规则</strong>：Intent中如果有category那么所有的category都必须和过滤规则中的其中一个category相同，如果没有category的话那么就是默认的category，即android.intent.category.DEFAULT，所以为了Activity能够接收隐式调用，配置多个category的时候必须加上默认的category。</li>
+<li><strong>data匹配规则</strong>：Intent中必须含有data数据，并且data数据能够完全匹配过滤规则中的某一个data。<blockquote>
+<p>如何判断是否有Activity能够匹配我们的隐式Intent？<br>(1)PackageManager的resolveActivity方法或者Intent的resolveActivity方法：如果找不到就会返回null<br>(2)PackageManager的queryIntentActivities方法：它返回所有成功匹配的Activity信息针对Service和BroadcastReceiver等组件，PackageManager同样提供了类似的方法去获取成功匹配的组件信息，例如queryIntentServices、queryBroadcastReceivers等方法</p>
+</blockquote>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+
+<!--
+    
+-->
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i>&nbsp; Android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/14/1/" rel="prev" title="Service及相关知识点总结">
+                Service及相关知识点总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+    
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="仲崇峰" />
+          <p class="site-author-name" itemprop="name">仲崇峰</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-生命周期的各个过程"><span class="nav-text">1.生命周期的各个过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-onSaveInstanceState和onRestoreInstanceState触发的时机："><span class="nav-text">2.onSaveInstanceState和onRestoreInstanceState触发的时机：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Activity优先级："><span class="nav-text">3.Activity优先级：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Activity的启动模式："><span class="nav-text">4.Activity的启动模式：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-TaskAffinity"><span class="nav-text">5.TaskAffinity</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-Intent常用FLAG"><span class="nav-text">6.Intent常用FLAG</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-IntentFilter的匹配规则"><span class="nav-text">7.IntentFilter的匹配规则</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <!--
+
+<div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">仲崇峰</span>
+</div>
+
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+-->
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
