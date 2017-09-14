@@ -78,7 +78,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Java," />
+  <meta name="keywords" content="JVM," />
 
 
 
@@ -94,18 +94,21 @@
 
 
 
-<meta name="description" content="1. 重载、重写和隐藏1). 重载(overload)：方法重载就是多个方法名称相同但是参数类型或者参数个数不同的方法，与返回值类型和修饰符无关 12345678910111213141516171819202122232425class Test &amp;#123;    public int test(int a) &amp;#123;        return a;    &amp;#125;        p">
-<meta name="keywords" content="Java">
+<meta name="description" content="1.虚拟机内存区域  程序计数器：线程私有，较小的内存空间，功能类似于PC寄存器，字节码解释器工作时通过改变这个计数器的值来选取下一条需要执行的字节码指令。不会发生OutOfMemoryError异常 虚拟机栈：线程私有，它的生命周期与线程相同，描述的是java方法执行的内存模型：每个方法在执行的同时都会创建栈帧用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用到执行完成对应">
+<meta name="keywords" content="JVM">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java面向对象知识点整理">
+<meta property="og:title" content="Java内存区域">
 <meta property="og:url" content="http://oniros.cn/2017/02/24/1/index.html">
 <meta property="og:site_name" content="仲崇峰">
-<meta property="og:description" content="1. 重载、重写和隐藏1). 重载(overload)：方法重载就是多个方法名称相同但是参数类型或者参数个数不同的方法，与返回值类型和修饰符无关 12345678910111213141516171819202122232425class Test &amp;#123;    public int test(int a) &amp;#123;        return a;    &amp;#125;        p">
+<meta property="og:description" content="1.虚拟机内存区域  程序计数器：线程私有，较小的内存空间，功能类似于PC寄存器，字节码解释器工作时通过改变这个计数器的值来选取下一条需要执行的字节码指令。不会发生OutOfMemoryError异常 虚拟机栈：线程私有，它的生命周期与线程相同，描述的是java方法执行的内存模型：每个方法在执行的同时都会创建栈帧用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用到执行完成对应">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-08-23T05:40:28.428Z">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1213892-b3167f1cccab184d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1213892-e719d50f032064e4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540">
+<meta property="og:updated_time" content="2017-09-14T07:30:13.745Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java面向对象知识点整理">
-<meta name="twitter:description" content="1. 重载、重写和隐藏1). 重载(overload)：方法重载就是多个方法名称相同但是参数类型或者参数个数不同的方法，与返回值类型和修饰符无关 12345678910111213141516171819202122232425class Test &amp;#123;    public int test(int a) &amp;#123;        return a;    &amp;#125;        p">
+<meta name="twitter:title" content="Java内存区域">
+<meta name="twitter:description" content="1.虚拟机内存区域  程序计数器：线程私有，较小的内存空间，功能类似于PC寄存器，字节码解释器工作时通过改变这个计数器的值来选取下一条需要执行的字节码指令。不会发生OutOfMemoryError异常 虚拟机栈：线程私有，它的生命周期与线程相同，描述的是java方法执行的内存模型：每个方法在执行的同时都会创建栈帧用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用到执行完成对应">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1213892-b3167f1cccab184d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540">
 
 
 
@@ -140,7 +143,7 @@
 
 
 
-  <title>Java面向对象知识点整理 | 仲崇峰</title>
+  <title>Java内存区域 | 仲崇峰</title>
   
 
 
@@ -310,7 +313,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java面向对象知识点整理</h1>
+          <h1 class="post-title" itemprop="name headline">Java内存区域</h1>
         
 
         <div class="post-meta">
@@ -345,8 +348,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java基础/" itemprop="url" rel="index">
-                    <span itemprop="name">Java基础</span>
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
                   </a>
                 </span>
 
@@ -382,49 +385,30 @@
       
 
       
-        <h2 id="1-重载、重写和隐藏"><a href="#1-重载、重写和隐藏" class="headerlink" title="1. 重载、重写和隐藏"></a>1. 重载、重写和隐藏</h2><p><strong>1). 重载(overload)：</strong><br>方法重载就是多个方法名称相同但是参数类型或者参数个数不同的方法，<strong>与返回值类型和修饰符无关</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">test</span><span class="params">(<span class="keyword">int</span> a)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> a;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">test</span><span class="params">(String a)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> a;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">float</span> <span class="title">test</span><span class="params">(<span class="keyword">int</span> a, String b)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="number">0f</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">float</span> <span class="title">test</span><span class="params">(String a, <span class="keyword">int</span> b)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="number">1.0f</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function">String <span class="title">test</span><span class="params">(<span class="keyword">float</span> a)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">""</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function">String <span class="title">test</span><span class="params">(<span class="keyword">int</span> a)</span> </span>&#123;<span class="comment">//该方法不是重载  </span></div><div class="line">        <span class="keyword">return</span> <span class="string">""</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>前面五个互为重载，第一个和第六个虽然返回值类型不同，但参数相同，所以第一个和第六个参数不是重载<br><strong>2). 重写(override):</strong><br>子类继承父类时，子类的方法名称、参数类型、参数个数与父类<strong>完全相同</strong>，则认为子类重写了父类的方法。</p>
-<p><strong>方法重写规则：</strong></p>
+        <h2 id="1-虚拟机内存区域"><a href="#1-虚拟机内存区域" class="headerlink" title="1.虚拟机内存区域"></a>1.虚拟机内存区域</h2><p><img src="http://upload-images.jianshu.io/upload_images/1213892-b3167f1cccab184d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540" alt="运行时数据区"></p>
 <ul>
-<li>参数列表和原方法完全相同</li>
-<li>返回值类型和原方法相同或者为父类返回值类型的子类型</li>
-<li>不能比原方法限制更严格的访问级别(举例：父类方法为public，那么子类不能为protected、private)</li>
-<li>父类方法被定义为final时，则不能被重写</li>
-<li>父类方法被定义为static时，不能被重写，但是可以重写声明一个相同的方法（参考<strong>隐藏</strong>）</li>
-<li>不能抛出新的异常或比原方法更广泛的异常（父类抛出IOException，重写方法不能抛出Exception只能抛出IOException或者IOException子类异常）</li>
+<li><strong>程序计数器</strong>：线程私有，较小的内存空间，功能类似于PC寄存器，字节码解释器工作时通过改变这个计数器的值来选取下一条需要执行的字节码指令。不会发生OutOfMemoryError异常</li>
+<li><strong>虚拟机栈</strong>：线程私有，它的生命周期与线程相同，描述的是java方法执行的内存模型：每个方法在执行的同时都会创建栈帧用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每一个方法从调用到执行完成对应着一个栈帧在虚拟机栈中入栈到出栈的过程。这个区域规定了两种异常状况：线程请求的栈深度大于虚拟机所允许的深度抛出StackOverflowError异常；虚拟机栈动态扩展无法申请足够的内存抛出OutOfMemoryError异常。</li>
+<li><strong>本地方法栈</strong>：线程私有，与虚拟机栈的区别为虚拟机执行的时java方法服务，本地方法栈则为虚拟机使用的Native方法服务。此区域也会抛出StackOverflowError和OutOfMemoryError异常。</li>
+<li><strong>堆</strong>：线程共享，用来存放对象实例或数组，几乎所有的对象实例都在这里分配内存，可以处于不连续的内存空间。堆是垃圾收集器管理的主要区域，因此也称为GC堆。如果堆中没有内存用来完成分配实例，并且无法扩展则会抛出OutOfMemoryError异常。</li>
+<li><strong>方法区</strong>：线程共享，用来存放已被虚拟机加载的类信息、常量、静态变量、即使编译器编译后的代码等数据。很多人称之为“永久区”，垃圾收集行为在这个区域比较少见，但数据并非永久存在。当方法区无法满足内存分配需求时将抛出OutOfMemoryError异常。</li>
 </ul>
-<p><strong>3). 隐藏:</strong><br>隐藏是针对于父类的成员变量和静态方法而言的。子类中声明了和父类相同的变量名或静态方法(方法名相同、参数列表相同、返回类型相同)则实现了对父类成员变量和静态方法的隐藏，下面举个例子有助理解：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;  </div><div class="line">    <span class="keyword">static</span> <span class="keyword">int</span> a = <span class="number">1</span>;  </div><div class="line">    <span class="keyword">static</span> <span class="keyword">int</span> b = <span class="number">2</span>;  </div><div class="line">    <span class="keyword">int</span> c = <span class="number">33</span>;</div><div class="line">  </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printA</span><span class="params">()</span> </span>&#123;  </div><div class="line">        System.out.print(a);  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printB</span><span class="params">()</span> </span>&#123;  </div><div class="line">        System.out.print(b);  </div><div class="line">    &#125;  </div><div class="line">  </div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;  </div><div class="line">    <span class="keyword">static</span> <span class="keyword">int</span> a = <span class="number">3</span>;  </div><div class="line">    <span class="keyword">static</span> <span class="keyword">int</span> b = <span class="number">4</span>;</div><div class="line">    <span class="keyword">int</span> c = <span class="number">44</span>;</div><div class="line">  </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">printB</span><span class="params">()</span> </span>&#123; </div><div class="line">        System.out.print(b);  </div><div class="line">    &#125;  </div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;  </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </div><div class="line">        B.printA();</div><div class="line">        B.printB();</div><div class="line">        System.out.print(B.a);  </div><div class="line">        </div><div class="line">        A a = <span class="keyword">new</span> B();</div><div class="line">        B b = <span class="keyword">new</span> B();</div><div class="line"></div><div class="line">        a.printB();</div><div class="line">        b.printB();</div><div class="line">        System.out.print(a.c);</div><div class="line">        System.out.print(b.c);</div><div class="line">    &#125;  </div><div class="line">&#125;  </div><div class="line"></div><div class="line">输出结果：</div><div class="line"><span class="number">1</span> <span class="number">4</span> <span class="number">3</span> <span class="number">2</span> <span class="number">4</span> <span class="number">33</span> <span class="number">44</span></div></pre></td></tr></table></figure>
-<p>如果子类中有相同名称的静态方法或变量父类的会被<strong>隐藏</strong>，如果子类中存在同名的静态方法或变量，则会<strong>隐藏</strong>父类中得静态方法或变量，此时子类调用的就是子类中自己的静态方法或变量；如果子类中不存在同名的静态方法或变量，则会调用父类中的静态方法或变量；父类调用的始终是其本身的静态方法和变量。</p>
-<h2 id="2-封装："><a href="#2-封装：" class="headerlink" title="2. 封装："></a>2. 封装：</h2><p>封装是把对象的属性和操作结合为一个独立的整体，隐藏对象内部操作的实现，用户只需要通过其对外提供的方法来访问该对象，无需知道其内部实现细节。</p>
-<p><strong>优点：</strong></p>
+<h2 id="2-栈帧"><a href="#2-栈帧" class="headerlink" title="2.栈帧"></a>2.栈帧</h2><p><img src="http://upload-images.jianshu.io/upload_images/1213892-e719d50f032064e4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540" alt="虚拟机栈结构"></p>
+<p>每一个方法从调用到执行完成对应着一个栈帧在虚拟机栈中入栈到出栈的过程。每个方法在执行的同时都会创建栈帧用于存储局部变量表、操作数栈、动态链接、方法出口等信息。</p>
 <ul>
-<li>隐藏内部实现细节，提供公共访问方式</li>
-<li>类内部可以自由修改不影响其调用者</li>
-<li>减少耦合度，提高安全性   </li>
+<li><strong>局部变量表</strong>：是一个以字长为单位的数组，通过索引从0开始访问（0位置一般为this引用），用来存放方法内定义的局部变量（包括this引用）和方法参数，可存放boolean、byte、char、short、int、float、long、double、reference(对象的引用)或returnAddress(指向下一条字节码指令的地址)类型的数据</li>
+<li><strong>操作数栈</strong>：是一个以字长为单位的数组，通过压栈和出栈访问。操作数栈的每一个元素可以是任意Java数据类型。虚拟机把操作数栈作为它的工作区——大多数指令都要从这里弹出数据，执行运算，然后把结果压回操作数栈。举个例子，整数加法的字节码指令iadd在运行的时候要求操作数栈中最接近栈顶的两个元素已经存入了两个int型的数值，当执行这个指令时，会将这两个int值和并相加，然后将相加的结果入栈。</li>
+<li><strong>动态链接</strong>：每个栈帧都包含一个执行运行时常量池中该栈帧所属方法的引用，持有这个引用是为了支持方法调用过程中的动态连接。Class 文件中存放了大量的符号引用，字节码中的方法调用指令就是以常量池中指向方法的符号引用作为参数。这些符号引用一部分会在类加载阶段或第一次使用时转化为直接引用，这种转化称为静态解析。另一部分将在每一次运行期间转化为直接引用，这部分称为动态连接。</li>
+<li><strong>方法出口</strong>：方法执行后只有返回字节码指令或抛出异常才会退出，无论方法如何退出都需要返回到方法被调用的位置，程序才能继续执行。方法退出等同于当前栈帧出栈，因此退出时可能执行的操作有：恢复上层方法的局部变量表和操作数栈，把返回值（如果有的话）压入调用者栈帧的操作数栈中，调整PC计数器的值以指向方法调用指令后面的一条指令等。</li>
 </ul>
-<h2 id="3-继承："><a href="#3-继承：" class="headerlink" title="3. 继承："></a>3. 继承：</h2><p>继承是一个对象获取另一个对象属性的过程，关键字为<code>extends</code>和<code>implements</code>。</p>
-<p><strong>1). IS-A关系(一个对象所属于另一个对象)：</strong></p>
-<p><strong>方式一. 用extends来实现继承：</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"Animal eating..."</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Mammal</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"Mammal eating..."</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Dog</span> <span class="keyword">extends</span> <span class="title">Mammal</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"Dog eating..."</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><strong>方式二. 用implements来实现继承：</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Animal</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span></span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Mammal</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"Mammal eating..."</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Dog</span> <span class="keyword">extends</span> <span class="title">Mammal</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">eat</span><span class="params">()</span> </span>&#123;</div><div class="line">        System.out.println(<span class="string">"Dog eating..."</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>无论方式一还是方式二，我们都可以用instanceof关键字检查得出：Mammal是一个Animal(哺乳动物也是动物)；Dog既是一个Mammal，也是一个Animal(狗既是哺乳动物也是动物)。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;  </div><div class="line">     <span class="comment">/**</span></div><div class="line"><span class="comment">      * instanceof关键字检查代码</span></div><div class="line"><span class="comment">      */</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        Mammal m = <span class="keyword">new</span> Mammal();</div><div class="line">        Dog d = <span class="keyword">new</span> Dog();</div><div class="line">        System.out.print(m <span class="keyword">instanceof</span> Animal);</div><div class="line">        System.out.print(d <span class="keyword">instanceof</span> Mammal);</div><div class="line">        System.out.print(d <span class="keyword">instanceof</span> Animal);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">输出结果：</div><div class="line"><span class="keyword">true</span> <span class="keyword">true</span> <span class="keyword">true</span></div></pre></td></tr></table></figure>
-<p><strong>2). HAS-A关系(一个对象含有另一个对象的一些属性)：</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Car</span></span>&#123;&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Speed</span></span>&#123;&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Benz</span> <span class="keyword">extends</span> <span class="title">Car</span></span>&#123;</div><div class="line">    <span class="keyword">private</span> Speed sp; </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>Benz含有Spend属性，但Benz不是Spend</p>
-<h2 id="4-多态："><a href="#4-多态：" class="headerlink" title="4. 多态："></a>4. 多态：</h2><p>实现多态的三个必要条件：继承、重写、父类引用指向子类对象。<br><strong>1). 向上转型：</strong></p>
-<p>我们实例化一个Dog对象可以用 <code>Dog d = new Dog();</code> 我们也可以用 <code>Animal d = new Dog();</code>，后者就是向上转型(父引用指向子对象)，上面两种方式创建出来的对象d，调用<code>d.eat();</code>输出的结果都是<code>Dog eating...</code>，这就体现出了java得多态。向上转型创建的对象会遗失掉和父类不同的方法和变量(不能用来调用子类特有的方法和变量)。<br><strong>2). 举例说明：</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">show</span><span class="params">(D obj)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> (<span class="string">"A and D"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">show</span><span class="params">(A obj)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> (<span class="string">"A and A"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">show</span><span class="params">(B obj)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> (<span class="string">"B and B"</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">show</span><span class="params">(A obj)</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> (<span class="string">"B and A"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> <span class="keyword">extends</span> <span class="title">B</span> </span>&#123;&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span> <span class="keyword">extends</span> <span class="title">B</span> </span>&#123;&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">        A a1 = <span class="keyword">new</span> A();</div><div class="line">        A a2 = <span class="keyword">new</span> B();</div><div class="line">        B b = <span class="keyword">new</span> B();</div><div class="line">        C c = <span class="keyword">new</span> C();</div><div class="line">        D d = <span class="keyword">new</span> D();</div><div class="line">        System.out.println(a1.show(b)); <span class="comment">//  ①</span></div><div class="line">        System.out.println(a1.show(c)); <span class="comment">//  ②</span></div><div class="line">        System.out.println(a1.show(d)); <span class="comment">//  ③</span></div><div class="line">        System.out.println(a2.show(b)); <span class="comment">//  ④</span></div><div class="line">        System.out.println(a2.show(c)); <span class="comment">//  ⑤</span></div><div class="line">        System.out.println(a2.show(d)); <span class="comment">//  ⑥</span></div><div class="line">        System.out.println(b.show(b));  <span class="comment">//  ⑦</span></div><div class="line">        System.out.println(b.show(c));  <span class="comment">//  ⑧</span></div><div class="line">        System.out.println(b.show(d));  <span class="comment">//  ⑨</span></div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">输出结果：</div><div class="line">A and A <span class="comment">//  ①</span></div><div class="line">A and A <span class="comment">//  ②</span></div><div class="line">A and D <span class="comment">//  ③</span></div><div class="line">B and A <span class="comment">//  ④</span></div><div class="line">B and A <span class="comment">//  ⑤</span></div><div class="line">A and D <span class="comment">//  ⑥</span></div><div class="line">B and B <span class="comment">//  ⑦</span></div><div class="line">B and B <span class="comment">//  ⑧</span></div><div class="line">A and D <span class="comment">//  ⑨</span></div></pre></td></tr></table></figure>
-<p>前三个比较简单不容易出错，看看下面几个：</p>
-<ul>
-<li>④：a2是A的引用指向B对象，向上转型创建的对象会遗失掉和父类不同的方法和变量，所以a2只能调用<code>show(D obj)</code>、<code>show(A obj)</code>两个方法，所以<code>a2.show(b)</code>应该调用<code>show(A obj)</code>方法，B中重写了该方法，所以运行时JVM会调用B类中重写的<code>show(A obj)</code>方法，所以输出<code>B and A</code>；</li>
-<li>⑤: 原理同④；</li>
-<li>⑥：<code>a2.show(d)</code>应该调用<code>show(D obj)</code>方法，B中没有重写该方法所以调用的为A类中的该方法，所以输出为<code>A and D</code>;</li>
-<li>⑦⑧⑨：b为B类对象，可调用A类中<code>show(D obj)</code>、B类中<code>show(B obj)</code>、B类中<code>show(A obj)</code>方法，所以输出如上。</li>
+<h2 id="2-补充"><a href="#2-补充" class="headerlink" title="2.补充"></a>2.补充</h2><ul>
+<li>运行时常量池：是方法区的一部分，加载class文件时会将class文件中用于存放编译器生成的各种字面量和符号引用的内容存放在常量池中，运行期间也可以将新的常量放入常量池，例如String.intern()方法，受限于方法区，当方法区无法满足内存分配需求时将抛出。OutOfMemoryError异常</li>
+<li>直接内存：不是虚拟机内存区域，受限于本机总内存，无法动态扩展时出现OutOfMemoryError异常。(Native函数库可以直接分配堆外内存，然后通过java堆中得DirectByteBuffer对象作为这块区域的引用进行操作，避免java堆和Native堆来回复制)。</li>
 </ul>
+<h2 id="3-注意"><a href="#3-注意" class="headerlink" title="3.注意"></a>3.注意</h2><p>很多人吧java内存划分为堆(Heap)和栈(Stack)，这里的栈指的是虚拟机栈或者是虚拟机栈中得局部变量表部分。</p>
+<blockquote>
+<p>参考：<br>1.<a href="http://www.cnblogs.com/dolphin0520/p/3613043.html" target="_blank" rel="external">http://www.cnblogs.com/dolphin0520/p/3613043.html</a><br>2.<a href="http://www.360doc.com/content/14/0925/13/1073512_412236522.shtml" target="_blank" rel="external">http://www.360doc.com/content/14/0925/13/1073512_412236522.shtml</a></p>
+</blockquote>
 
       
     </div>
@@ -445,7 +429,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i>&nbsp; Java</a>
+            <a href="/tags/JVM/" rel="tag"><i class="fa fa-tag"></i>&nbsp; JVM</a>
           
         </div>
       
@@ -458,8 +442,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/02/13/1/" rel="next" title="Java内存区域">
-                <i class="fa fa-chevron-left"></i> Java内存区域
+              <a href="/2017/02/14/1/" rel="next" title="Java反射和代理">
+                <i class="fa fa-chevron-left"></i> Java反射和代理
               </a>
             
           </div>
@@ -467,10 +451,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/08/24/1/" rel="prev" title="Spring系列：（一）Spring三种配置bean的方式">
-                Spring系列：（一）Spring三种配置bean的方式 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -605,7 +585,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-重载、重写和隐藏"><span class="nav-text">1. 重载、重写和隐藏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-封装："><span class="nav-text">2. 封装：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-继承："><span class="nav-text">3. 继承：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-多态："><span class="nav-text">4. 多态：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-虚拟机内存区域"><span class="nav-text">1.虚拟机内存区域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-栈帧"><span class="nav-text">2.栈帧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-补充"><span class="nav-text">2.补充</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-注意"><span class="nav-text">3.注意</span></a></li></ol></div>
             
 
           </div>
