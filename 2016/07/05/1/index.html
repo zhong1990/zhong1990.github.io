@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/uploads/avatar.jpg?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="HanlderThread继承自Thread，它的run()中通过Looper.prepare()创建了消息队列，并通过Looper.loop()开启了消息循环，这样我们就可以在HandlerThread中创建Handler了(对Android消息机制不熟悉的可以参考Android消息机制(Handler、Looper、MessageQueue)，从而外界通过Hanlder通知HandlerThr">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android线程—HandlerThread的使用及原理">
+<meta property="og:url" content="http://oniros.cn/2016/07/05/1/index.html">
+<meta property="og:site_name" content="仲崇峰">
+<meta property="og:description" content="HanlderThread继承自Thread，它的run()中通过Looper.prepare()创建了消息队列，并通过Looper.loop()开启了消息循环，这样我们就可以在HandlerThread中创建Handler了(对Android消息机制不熟悉的可以参考Android消息机制(Handler、Looper、MessageQueue)，从而外界通过Hanlder通知HandlerThr">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-09-26T08:48:37.348Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android线程—HandlerThread的使用及原理">
+<meta name="twitter:description" content="HanlderThread继承自Thread，它的run()中通过Looper.prepare()创建了消息队列，并通过Looper.loop()开启了消息循环，这样我们就可以在HandlerThread中创建Handler了(对Android消息机制不熟悉的可以参考Android消息机制(Handler、Looper、MessageQueue)，从而外界通过Hanlder通知HandlerThr">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '仲崇峰'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://oniros.cn/2016/07/05/1/"/>
+
+
+
+
+
+  <title>Android线程—HandlerThread的使用及原理 | 仲崇峰</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fc005a31602cc126a53e91f81e842864";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">仲崇峰</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://oniros.cn/2016/07/05/1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="仲崇峰">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="仲崇峰">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android线程—HandlerThread的使用及原理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-07-05T14:54:00+08:00">
+                2016-07-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><code>HanlderThread</code>继承自<code>Thread</code>，它的<code>run()</code>中通过<code>Looper.prepare()</code>创建了消息队列，并通过<code>Looper.loop()</code>开启了消息循环，这样我们就可以在<code>HandlerThread</code>中创建<code>Handler</code>了(对<code>Android</code>消息机制不熟悉的可以参考<a href="http://www.jianshu.com/p/612b834356ab" target="_blank" rel="external">Android消息机制(Handler、Looper、MessageQueue</a>)，从而外界通过<code>Hanlder</code>通知<code>HandlerThread</code>来执行一个具体的任务。</p>
+<h2 id="1-HanlderThread的使用"><a href="#1-HanlderThread的使用" class="headerlink" title="1.HanlderThread的使用"></a>1.HanlderThread的使用</h2><p>下面来简单的演示一下<code>HandlerThread</code>的使用，布局文件没有任何作用所以就不贴出来了<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * 工作消息标志</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="keyword">int</span> MSG_WORK = <span class="number">0x01</span>;</div><div class="line">    <span class="keyword">private</span> Handler       mHandler;</div><div class="line">    <span class="keyword">private</span> HandlerThread mHandlerThread;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView(R.layout.activity_main);</div><div class="line">        mHandlerThread = <span class="keyword">new</span> HandlerThread(<span class="string">"HandlerThread"</span>);</div><div class="line">        mHandlerThread.start();     <span class="comment">//开始线程</span></div><div class="line">        mHandler = <span class="keyword">new</span> Handler(mHandlerThread.getLooper()) &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    Thread.sleep(<span class="number">3000</span>);     <span class="comment">//模拟延时操作</span></div><div class="line">                    Log.e(Thread.currentThread().getName(), (<span class="keyword">int</span>) (Math.random() * <span class="number">3000</span> + <span class="number">1000</span>) + <span class="string">""</span>);</div><div class="line">                    mHandler.sendEmptyMessageDelayed(MSG_WORK, <span class="number">1000</span>);   <span class="comment">//延时一秒发送工作消息</span></div><div class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                    e.printStackTrace();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">        mHandler.sendEmptyMessage(MSG_WORK);    <span class="comment">//发送工作消息,触发消息Handler执行</span></div><div class="line">    &#125;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onDestroy();</div><div class="line">        mHandler.removeMessages(MSG_WORK);      <span class="comment">//移除队列中为执行的工作消息</span></div><div class="line">        mHandlerThread.quit();      <span class="comment">//退出线程</span></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>下面是<code>logcat</code>的输出结果：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="number">07</span>-<span class="number">08</span> <span class="number">14</span>:<span class="number">08</span>:<span class="number">19.522</span> <span class="number">1404</span>-<span class="number">1619</span>/com.zhong.handlerthread E/HandlerThread: <span class="number">1902</span></div><div class="line"><span class="number">07</span>-<span class="number">08</span> <span class="number">14</span>:<span class="number">08</span>:<span class="number">23.523</span> <span class="number">1404</span>-<span class="number">1619</span>/com.zhong.handlerthread E/HandlerThread: <span class="number">3108</span></div><div class="line"><span class="number">07</span>-<span class="number">08</span> <span class="number">14</span>:<span class="number">08</span>:<span class="number">27.525</span> <span class="number">1404</span>-<span class="number">1619</span>/com.zhong.handlerthread E/HandlerThread: <span class="number">3630</span></div><div class="line"><span class="number">07</span>-<span class="number">08</span> <span class="number">14</span>:<span class="number">08</span>:<span class="number">31.527</span> <span class="number">1404</span>-<span class="number">1619</span>/com.zhong.handlerthread E/HandlerThread: <span class="number">1041</span></div><div class="line"><span class="number">07</span>-<span class="number">08</span> <span class="number">14</span>:<span class="number">08</span>:<span class="number">35.528</span> <span class="number">1404</span>-<span class="number">1619</span>/com.zhong.handlerthread E/HandlerThread: <span class="number">2845</span></div><div class="line"><span class="number">07</span>-<span class="number">08</span> <span class="number">14</span>:<span class="number">08</span>:<span class="number">39.529</span> <span class="number">1404</span>-<span class="number">1619</span>/com.zhong.handlerthread E/HandlerThread: <span class="number">3871</span></div><div class="line"><span class="number">07</span>-<span class="number">08</span> <span class="number">14</span>:<span class="number">08</span>:<span class="number">43.531</span> <span class="number">1404</span>-<span class="number">1619</span>/com.zhong.handlerthread E/HandlerThread: <span class="number">1767</span></div><div class="line"><span class="number">07</span>-<span class="number">08</span> <span class="number">14</span>:<span class="number">08</span>:<span class="number">47.533</span> <span class="number">1404</span>-<span class="number">1619</span>/com.zhong.handlerthread E/HandlerThread: <span class="number">2593</span></div></pre></td></tr></table></figure></p>
+<p>每隔4s输出当前线程的名称和一个随机数，通过线程名称我们可以发现这段代码确实是在<code>HandlerThread</code>线程中执行的。上面的程序毫无使用价值，只是为了演示<code>HandlerThread</code>的使用，<code>HandlerThread</code>是一个很有用的类，<code>Android</code>中的<code>IntentService</code>中就封装了一个<code>HanderThread</code>(后续再做介绍，这里就不做解释了)<br><strong>注意:</strong><br><code>HandlerThread</code>的<code>run</code>方法是一个无限循环，<code>Looper.loop()</code>会不断循环取消消息交给<code>Handler</code>处理，没有消息是会阻塞，所以当不需要使用<code>HandlerThread</code>时用调用它的<code>quit()</code>或<code>quitSafely()</code>终止线程执行。</p>
+<h2 id="2-HanlderThread的原理"><a href="#2-HanlderThread的原理" class="headerlink" title="2.HanlderThread的原理"></a>2.HanlderThread的原理</h2><p>下面我们通过源码来分析一下HandlerThread：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HandlerThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> mPriority;</div><div class="line">    <span class="keyword">int</span> mTid = -<span class="number">1</span>;</div><div class="line">    Looper mLooper;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HandlerThread</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(name);</div><div class="line">        mPriority = Process.THREAD_PRIORITY_DEFAULT;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HandlerThread</span><span class="params">(String name, <span class="keyword">int</span> priority)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>(name);</div><div class="line">        mPriority = priority;</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onLooperPrepared</span><span class="params">()</span> </span>&#123;</div><div class="line">    &#125;</div><div class="line">    <span class="meta">@Override</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">        mTid = Process.myTid();</div><div class="line">        Looper.prepare();</div><div class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">            mLooper = Looper.myLooper();</div><div class="line">            notifyAll();    <span class="comment">//唤醒其他线程的等待锁，这边是为了唤醒getLooper()方法中的等待锁</span></div><div class="line">        &#125;</div><div class="line">        Process.setThreadPriority(mPriority);</div><div class="line">        onLooperPrepared();</div><div class="line">        Looper.loop();</div><div class="line">        mTid = -<span class="number">1</span>;</div><div class="line">    &#125;        </div><div class="line">    <span class="function"><span class="keyword">public</span> Looper <span class="title">getLooper</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">if</span> (!isAlive()) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="comment">// 线程开始，该方法会一直等待Looper对象创建完成才会执行，               </span></div><div class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">            <span class="keyword">while</span> (isAlive() &amp;&amp; mLooper == <span class="keyword">null</span>) &#123;</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    wait();</div><div class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> mLooper;</div><div class="line">    &#125;    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">quit</span><span class="params">()</span> </span>&#123;</div><div class="line">        Looper looper = getLooper();</div><div class="line">        <span class="keyword">if</span> (looper != <span class="keyword">null</span>) &#123;</div><div class="line">            looper.quit();</div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">quitSafely</span><span class="params">()</span> </span>&#123;</div><div class="line">        Looper looper = getLooper();</div><div class="line">        <span class="keyword">if</span> (looper != <span class="keyword">null</span>) &#123;</div><div class="line">            looper.quitSafely();</div><div class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getThreadId</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> mTid;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>HandlerThread</code>源码实现还是挺清楚的，首先我们看一下它的<code>run()</code>方法，可以发现该方法中调用<code>Looper.myLooper()</code>创建了一个<code>Looper</code>对象<code>mLooper</code>，并把该对象放到线程变量<code>sThreadLocal</code>中，然后通过调用<code>Looper.loop()</code>开启消息循环，<code>Looper.loop()</code>方法会不断循环从<code>MessageQueue</code>中取出消息处理消息，没有消息是则会阻塞。<code>getLooper()</code>方法是获取线程中的<code>Looper</code>对象，可以用来初始化<code>Handler</code>对象。<br><code>quit()</code>和<code>quitSafely()</code>的区别在于，<code>quit()</code>会清空所有消息(无论延时或非延时)，<code>quitSafely()</code>只清空延时消息，无论是调用了<code>quit()</code>方法还是<code>quitSafely()</code>方法，<code>Looper</code>就不再接收新的消息。即在调用了<code>Looper</code>的<code>quit()</code>或<code>quitSafely()</code>方法之后，消息循环就终结了，这时候再通过<code>Handler</code>调用<code>sendMessage</code>或<code>post</code>等方法发送消息时均返回<code>false</code>，线程也就结束了</p>
+
+      
+    </div>
+    
+    
+    
+
+
+<!--
+    
+-->
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i>&nbsp; Android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/31/1/" rel="next" title="Android消息机制(Handler、Looper、MessageQueue)">
+                <i class="fa fa-chevron-left"></i> Android消息机制(Handler、Looper、MessageQueue)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/06/1/" rel="prev" title="Android线程—IntentService的使用及原理">
+                Android线程—IntentService的使用及原理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+    
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="仲崇峰" />
+          <p class="site-author-name" itemprop="name">仲崇峰</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-HanlderThread的使用"><span class="nav-text">1.HanlderThread的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-HanlderThread的原理"><span class="nav-text">2.HanlderThread的原理</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <!--
+
+<div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">仲崇峰</span>
+</div>
+
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+-->
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
